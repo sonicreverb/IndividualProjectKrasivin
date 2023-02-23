@@ -92,6 +92,3 @@ def get_data(input_type):
 
     data = {"Links": links_dict, "ImgLinks": img_dict}
     return data
-
-
-print(get_data('URL'))
