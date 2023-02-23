@@ -8,7 +8,6 @@ def validator(data):
 
     if os.path.exists(validatorspath):
         with open(validatorspath, 'r', encoding='UTF-8') as r:
-            # todo добавить бан всех сайта, имеющихся в data по хосту
             for link in r.read().split():
                 for full_link in list(data['Links']):
                     if link in full_link:
@@ -46,6 +45,7 @@ def links_replacement(origin_link, new_link):
         else:
             print("Ошибка, невозможно произвести замену, так как исходной ссылку нет в HTML, (link_replacement.py"
                   "links_replacement line 42).")
+            return None
 
     else:
         print("Ошибка, невозможно произвести замену, так как файла с HTML не существует, (link_replacement.py"
