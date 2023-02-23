@@ -3,7 +3,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from main import BASE_DIR
-
+from link_replacement import validator
 
 # получаем html заданному url
 def get_html_from_url(url):
@@ -93,3 +93,8 @@ def get_data(input_type):
 
     data = {"Links": links_dict, "ImgLinks": img_dict}
     return data
+
+
+a = get_data('File')
+validator(a)
+print(a)
