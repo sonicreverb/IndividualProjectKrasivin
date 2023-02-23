@@ -16,7 +16,7 @@ def get_html_from_url(url):
 
 # получаем html из файла
 def get_html_from_file():
-    html_file_path = os.path.join(BASE_DIR, 'parser', 'input.html')
+    html_file_path = os.path.join(BASE_DIR, 'parser_module', 'input.html')
 
     # проверка на то существует ли файл
     if os.path.exists(html_file_path):
@@ -80,6 +80,7 @@ def get_data(input_type):
             else:
                 links_dict[link] += 1
 
+    # тот же самый алгоритм для ссылок на изображения
     for img in img_li:
         if len(img) > 0:
             if img[0] == "#":
