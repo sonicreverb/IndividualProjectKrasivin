@@ -62,31 +62,36 @@ def get_data(input_type):
     links_li = [link.get('href') for link in soup.find_all('a')]
     img_li = [img.get('src') for img in soup.find_all('img')]
 
-    # если сслыка относительная, то к ней добавляется хост
-    index = 0
-    while index < (len(links_li)):
-        curr_link = links_li[index]
-        if curr_link[0] == '/':
-            links_li[index] = host + curr_link
-    # если ссылка невалидна на самом сайте, удаляем её из нашего массива
-        elif curr_link[0] == '#':
-            links_li.pop(index)
-            index -= 1
-        index += 1
+    links_dict = {}
+    img_dict = {}
 
-    # тот же самый алгоритм для ссылок на изображения
-    index = 0
-    while index < (len(img_li)):
-        curr_link = img_li[index]
-        if curr_link[0] == '/':
-            img_li[index] = host + curr_link
-            if curr_link[0] == '#':
-                links_li.pop(index)
-                index -= 1
-        index += 1
+    for link in links_li:
+        if len(link) > 0:
+            # если ссылка относительная - добавляем к ней хост
+            if link[0] == "/":
+                link = host + link
+            # если сслыка невалидна на самом сайте - пропускаем её
+            elif link[0] == "#":
+                continue
 
-    data = {"Links": links_li, "ImgLinks": img_li}
+            # добавление ссылок и контролирование их кол-ва
+            if link not in links_dict:
+                links_dict[link] = 1
+            else:
+                links_dict[link] += 1
+
+    for img in img_li:
+        if len(img) > 0:
+            if img[0] == "#":
+                continue
+
+            if img not in img_dict:
+                img_dict[img] = 1
+            else:
+                img_dict[img] += 1
+
+    data = {"Links": links_dict, "ImgLinks": img_dict}
     return data
 
 
-print(get_data('File'))
+print(get_data('URL'))
