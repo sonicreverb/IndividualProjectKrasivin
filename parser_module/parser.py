@@ -3,7 +3,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from main import BASE_DIR
-from link_replacement import validator
+
 
 # получаем html заданному url
 def get_html_from_url(url):
@@ -16,7 +16,7 @@ def get_html_from_url(url):
 
 # получаем html из файла
 def get_html_from_file():
-    html_file_path = os.path.join(BASE_DIR, 'parser_module', 'input.html')
+    html_file_path = os.path.join(BASE_DIR, 'parser_module', 'text_data', 'html_input.txt')
 
     # проверка на то существует ли файл
     if os.path.exists(html_file_path):
@@ -30,18 +30,20 @@ def get_html_from_file():
         return None
 
 
-def get_data(input_type):
-    if input_type == "URL":
-        url = input('Введите адресс:')
+def get_data(input_type, url=None):
+    if input_type == "URL" and url:
         html = get_html_from_url(url)
 
-        # находим вхождение / в ссылке, для того чтобы получить хост сайта
-        try:
-            url_cut_to_index = [_.start() for _ in re.finditer('/', url)][2]
-            host = url[:url_cut_to_index]
-        except Exception as exc:
-            print(exc, '(parser.py get_data line 42).')
-            host = ""
+        if url.count('/') != 2:
+            # находим вхождение / в ссылке, для того чтобы получить хост сайта
+            try:
+                url_cut_to_index = [_.start() for _ in re.finditer('/', url)][2]
+                host = url[:url_cut_to_index]
+            except Exception as exc:
+                print(exc, '(parser.py get_data line 42).')
+                host = ""
+        else:
+            host = url
 
         print(host)
 
@@ -66,7 +68,7 @@ def get_data(input_type):
     img_dict = {}
 
     for link in links_li:
-        if len(link) > 0:
+        if link and len(link) > 0:
             # если ссылка относительная - добавляем к ней хост
             if link[0] == "/":
                 link = host + link
@@ -82,7 +84,9 @@ def get_data(input_type):
 
     # тот же самый алгоритм для ссылок на изображения
     for img in img_li:
-        if len(img) > 0:
+        if img and len(img) > 0:
+            if img[0] == "/":
+                img = host + img
             if img[0] == "#":
                 continue
 
@@ -95,6 +99,21 @@ def get_data(input_type):
     return data
 
 
-a = get_data('File')
-validator(a)
-print(a)
+def write_data_to_txt(data):
+    result_path = os.path.join(BASE_DIR, 'parser_module', 'text_data', 'result_data.txt')
+
+    with open(result_path, 'w', encoding='UTF-8') as w:
+        if len(data['Links']) != 0:
+            w.write("Ссылки, встречающиеся в данном HTML коде:\n")
+            for link in data['Links']:
+                w.write(str(link + " - " + str(data['Links'][link]) + "\n"))
+        else:
+            w.write("Ссылок, встречающихся в данном HTML коде не найдено...\n")
+        w.write('\n')
+
+        if len(data['ImgLinks']) != 0:
+            w.write("Ссылки на изображения, встречающиеся в данном HTML коде:\n")
+            for img in data['ImgLinks']:
+                w.write(str(img + " - " + str(data['ImgLinks'][img]) + "\n"))
+        else:
+            w.write("Ссылок на изображения, встречающихся в данном HTML коде не найдено...\n")

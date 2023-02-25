@@ -1,4 +1,4 @@
 requests
 BeautifulSoup4
-pyqt6
-pyqt-tools
+tkinter
+PIL

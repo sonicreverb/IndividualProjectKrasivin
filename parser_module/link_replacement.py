@@ -4,7 +4,7 @@ from main import BASE_DIR
 
 
 def validator(data):
-    validatorspath = os.path.join(BASE_DIR, 'parser_module', 'prohibited_sites.txt')
+    validatorspath = os.path.join(BASE_DIR, 'parser_module', 'text_data', 'prohibited_sites.txt')
 
     if os.path.exists(validatorspath):
         with open(validatorspath, 'r', encoding='UTF-8') as r:
@@ -37,11 +37,19 @@ def validator(data):
 
 
 def links_replacement(origin_link, new_link):
-    html_file_path = os.path.join(BASE_DIR, 'parser_module', 'input.html')
+    html_file_path = os.path.join(BASE_DIR, 'parser_module', 'text_data', 'html_input.txt')
     if os.path.exists(html_file_path):
-        html = open(html_file_path, 'wr', encoding='utf-8')
-        if origin_link in html.read():
-            html.write(re.sub(origin_link, new_link, origin_link))
+        html = open(html_file_path, 'r', encoding='utf-8')
+
+        data = html.read()
+
+        if origin_link in data:
+            wr_data = re.sub(origin_link, new_link, data)
+            html.close()
+            html_new = open(html_file_path, 'w', encoding='utf-8')
+
+            html_new.write(wr_data)
+            html_new.close()
         else:
             print("Ошибка, невозможно произвести замену, так как исходной ссылку нет в HTML, (link_replacement.py"
                   "links_replacement line 42).")
